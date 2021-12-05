@@ -1,0 +1,162 @@
+﻿@model List<ShopBridge_API.Models.ShopBridge>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index </h2>
+<script>
+
+    //$('#search').on('focus', () => {
+    //    $('input:radio').prop('checked', false);
+    //});
+
+    function saveInventory() {
+        debugger;
+        var inventory = {
+            Id: $('#inventoryId').val(),
+            Name: $('#name').val(),
+            Price: $('#price').val(),
+            Description: $('#description').val()
+        }
+        $.ajax({
+            url: "/ShopBridges/AddEditInventory",     //Call the Action Method AddEditElaattorney
+            data: JSON.stringify(inventory),          //Passing form values as parameter to action method
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            success: function (result) {
+                if (result == 0) {
+                    alert("Inventory Updated Successfully");
+                    location.reload();
+                }
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+
+    function showDialog(currentObj) {
+        $('#exampleModalLongTitle').html("Edit Product");
+        var val = currentObj
+        $('#editModal').modal({ backdrop: 'static', keyboard: false });
+        $.ajax({
+            url: "/ShopBridges/GetProductsFromEdit/" + currentObj,
+            type: "GET",
+            contentType: "application/json;charset=utf-8"
+        }).then(function (v1) {
+            debugger;
+            var inventoryData = JSON.parse(v1);
+            $('#inventoryId').val(inventoryData.Id);
+            $('#name').val(inventoryData.Name);
+            $('#price').val(inventoryData.Price);
+            $('#createdOn').val(inventoryData.CreatedOn);
+            $('#description').text(inventoryData.Description);
+
+        });
+    }
+
+    function addInventory() {
+        $('#exampleModalLongTitle').html("Add Product");
+
+        $('#editModal').modal({ backdrop: 'static', keyboard: false });
+        $('#inventoryId').val(null);
+        $('#name').val(null);
+        $('#price').val(null);
+        $('#description').val(null);
+        $('#createdOn').val(null);
+
+
+    }
+    function deleteInventory(id) {
+        var check = confirm("Are you sure you want to delete?");
+        if (check) {
+            $.ajax({
+                url: "/ShopBridges/DeleteInventory/" + id,
+                type: "GET",
+                contentType: "application/json;charset=utf-8"
+            }).then(function (v1) {
+                alert("Product Deleted Successfully")
+                location.reload();
+            });
+        }
+
+    }
+</script>
+@using (Html.BeginForm("Index", "ShopBridges", FormMethod.Get))
+{
+    //the following are search options
+    <b> Search Option: </b>@Html.RadioButton("option", "asc") <text>Asc Sort</text> @Html.RadioButton("option", "desc")<text> Desc Sort </text>
+    <input id="search" style="margin: 0 1rem" name="search" type="text" value="" onfocus="$('input:radio').prop('checked', false);">
+    <input class="btn btn-primary" type="submit" name="submit" value="Go" />
+    <button type="button" id="clear" onclick="location.href ='ShopBridges'" class="btn btn-info" >Clear Filter</button>
+}
+<table id="dt_basic" class="table dataTable">
+    <thead style="text-align: left;">
+        <tr>
+            <th style="text-align: left">Name</th>
+            <th style="text-align: left">Description</th>
+            <th style="text-align: left">Price</th>
+            <th class="text-center">Edit</th>
+            <th class="text-center">Delete</th>
+        </tr>
+    </thead>
+    <tbody role="alert" aria-live="polite" aria-relevant="all">
+
+        @foreach (var item in Model)
+        {
+            <tr class="trList">
+                <td> @string.Format("{0}", item.Name)</td>
+                <td> @string.Format("{0}", item.Description)</td>
+                <td> @string.Format("{0}", item.Price)</td>
+                <td class="text-center"><i class="fas fa-edit" style="cursor:pointer" onclick="showDialog(@string.Format("{0}", item.Id))"></i></td>
+                <td class="text-center"><i class="fas fa-trash" style="cursor:pointer" onclick="deleteInventory(@string.Format("{0}", item.Id))"></i></td>
+            </tr>
+        }
+        @if(Model.Count == 0) {
+            <tr><td colspan="6">No Product Found</td></tr>
+        }
+    </tbody>
+</table>
+<button type="button" class="btn btn-success" onclick="addInventory();">Add New Product</button>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" style="width: 300px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="inventoryId" />
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" placeholder="Product name">
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="text" class="form-control" id="price" placeholder="Enter price">
+                </div>
+                <div class="form-group">
+                    <label for="price">CreatedOn</label>
+                    <input type="text" class="form-control" id="createdOn" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <br />
+                    <textarea id="description" style="width: 100% !important;" rows="4"></textarea>
+                    @*<input type="text" class="form-control" id="name" placeholder="Enter description">*@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="saveInventory();">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
