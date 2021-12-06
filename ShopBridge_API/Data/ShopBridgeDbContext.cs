@@ -10,5 +10,6 @@ namespace ShopBridge_API.Data
     public class ShopBridgeDbContext:DbContext
     {
         public DbSet<ShopBridge> ShopBridge { get; set; }
+        public DbSet<Error> Error { get; set; }
     }
 }

@@ -9,15 +9,33 @@
     //$('#search').on('focus', () => {
     //    $('input:radio').prop('checked', false);
     //});
-
+    function onlyNumbers(evt) {
+        var e = event || evt; // for trans-browser compatibility
+        var charCode = e.which || e.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            alert("Please fill only numbers");
+            return false;
+        }
+        return true;
+    }
     function saveInventory() {
         debugger;
         var inventory = {
             Id: $('#inventoryId').val(),
             Name: $('#name').val(),
             Price: $('#price').val(),
-            Description: $('#description').val()
+            Description: $('#description').val(),
+            CreatedBy: $('#createdBy').val()
         }
+        if ($('#name').val() == '') {
+            alert('Please fill Name');
+            return 1;
+        }
+        else if($('#price').val() == '') {
+            alert('Please fill Price');
+            return 1;
+        }
+
         $.ajax({
             url: "/ShopBridges/AddEditInventory",     //Call the Action Method AddEditElaattorney
             data: JSON.stringify(inventory),          //Passing form values as parameter to action method
@@ -50,7 +68,11 @@
             $('#name').val(inventoryData.Name);
             $('#price').val(inventoryData.Price);
             $('#createdOn').val(inventoryData.CreatedOn);
+            $('#createdOn').show();
+            $('label[for="createdOn"]').show();
             $('#description').text(inventoryData.Description);
+            $('#createdBy').val(inventoryData.CreatedBy);
+            $('#createdBy').prop("disabled", true);
 
         });
     }
@@ -64,7 +86,10 @@
         $('#price').val(null);
         $('#description').val(null);
         $('#createdOn').val(null);
-
+        $('#createdOn').hide();
+        $('label[for="createdOn"]').hide();
+        $('#createdBy').val(null);
+        $('#createdBy').prop("disabled", false);
 
     }
     function deleteInventory(id) {
@@ -88,7 +113,7 @@
     <b> Search Option: </b>@Html.RadioButton("option", "asc") <text>Asc Sort</text> @Html.RadioButton("option", "desc")<text> Desc Sort </text>
     <input id="search" style="margin: 0 1rem" name="search" type="text" value="" onfocus="$('input:radio').prop('checked', false);">
     <input class="btn btn-primary" type="submit" name="submit" value="Go" />
-    <button type="button" id="clear" onclick="location.href ='ShopBridges'" class="btn btn-info" >Clear Filter</button>
+    <button type="button" id="clear" onclick="location.href ='ShopBridges'" class="btn btn-info">Clear Filter</button>
 }
 <table id="dt_basic" class="table dataTable">
     <thead style="text-align: left;">
@@ -107,12 +132,13 @@
             <tr class="trList">
                 <td> @string.Format("{0}", item.Name)</td>
                 <td> @string.Format("{0}", item.Description)</td>
-                <td> @string.Format("{0}", item.Price)</td>
+                <td> @string.Format("{0}", item.Price) Rs</td>
                 <td class="text-center"><i class="fas fa-edit" style="cursor:pointer" onclick="showDialog(@string.Format("{0}", item.Id))"></i></td>
                 <td class="text-center"><i class="fas fa-trash" style="cursor:pointer" onclick="deleteInventory(@string.Format("{0}", item.Id))"></i></td>
             </tr>
         }
-        @if(Model.Count == 0) {
+        @if (Model.Count == 0)
+        {
             <tr><td colspan="6">No Product Found</td></tr>
         }
     </tbody>
@@ -135,14 +161,18 @@
                 <input type="hidden" id="inventoryId" />
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" class="form-control" id="name" placeholder="Product name">
+                    <input type="text" class="form-control" id="name" placeholder="Product Name">
                 </div>
                 <div class="form-group">
                     <label for="price">Price</label>
-                    <input type="text" class="form-control" id="price" placeholder="Enter price">
+                    <input type="text" class="form-control" id="price" onkeypress="return onlyNumbers(this);" placeholder="Enter Price">
                 </div>
                 <div class="form-group">
-                    <label for="price">CreatedOn</label>
+                    <label for="createdBy">CreatedBy</label>
+                    <input type="text" class="form-control" id="createdBy" placeholder="Enter Name">
+                </div>
+                <div class="form-group">
+                    <label for="createdOn">CreatedOn</label>
                     <input type="text" class="form-control" id="createdOn" disabled>
                 </div>
                 <div class="form-group">

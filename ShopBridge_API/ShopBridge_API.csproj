@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ErrorsController.cs" />
     <Compile Include="Controllers\ShopBridgesController.cs" />
     <Compile Include="Data\ShopBridgeDbContext.cs" />
     <Compile Include="Global.asax.cs">
@@ -101,7 +102,12 @@
     <Compile Include="Migrations\202112051514471_FirstInsert.designer.cs">
       <DependentUpon>202112051514471_FirstInsert.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202112060829444_Erre.cs" />
+    <Compile Include="Migrations\202112060829444_Erre.designer.cs">
+      <DependentUpon>202112060829444_Erre.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Error.cs" />
     <Compile Include="Models\ShopBridge.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -120,6 +126,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202112051514471_FirstInsert.resx">
       <DependentUpon>202112051514471_FirstInsert.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112060829444_Erre.resx">
+      <DependentUpon>202112060829444_Erre.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
